@@ -32,7 +32,7 @@ RUN apt-get -y install libboost-program-options-dev
 #but we can load it in the docker anyway from our local machine
 
 WORKDIR /home/usr/
-RUN git clone https://github.com/swohlrab/FUSTrDev.git
+RUN git clone https://github.com/swohlrab/FUSTrDev_SW.git
 WORKDIR /home/usr/FUSTrDev/silix-1.2.11
 RUN apt-get install automake -y
 #RUN autoreconf -f -i
