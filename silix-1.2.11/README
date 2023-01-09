@@ -1,0 +1,44 @@
+1/ For installation procedure, watch INSTALL file.
+
+2/ For manual pages, use man command.
+
+3/ Information on file extensions:
+
+# .net : network in following format
+ID1 ID2
+ID1 ID3
+etc...
+
+# .wnet : weighted network in following format
+ID1 ID2 89
+ID1 ID3 74
+etc...
+or
+ID1 ID2 89 74
+ID1 ID3 74 99
+etc...
+
+# .fnet : same as .net but prefixed by family id
+FAMID1 ID1 ID2
+etc...
+
+# .fwnet : same as .wnet but prefixed by family id
+FAMID1 ID1 ID2 89
+etc...
+or
+FAMID1 ID1 ID2 89 74
+etc...
+
+# .nodes : nodes id in following format
+ID1
+ID2
+etc...
+
+# .fnodes : same as .nodes but prefixed by family id
+FAMID1 ID1
+etc...
+
+# .fams : families id in following format
+FAMID1
+FAMID2
+etc...

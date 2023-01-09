@@ -1,0 +1,71 @@
+.TH "SILIX" 1 "USER COMMANDS"
+.SH NAME
+silix \-  ultra fast SIngle LInkage Clustering of Sequences
+
+.SH SYNOPSIS
+.B silix
+.B [OPTIONS]
+\fIFASTAFILE\fR \fIBLASTFILE\fR
+
+.SH DESCRIPTION
+From sequences in fasta format and blast tabulated results, silix displays sequence families.
+FASTAFILE' respects the fasta format (no blank lines), 
+each line of 'BLASTFILE' is a blast hit (option -outfmt 6).
+Return a [prefixed] family id for each sequence id.
+
+
+.SH ARGUMENTS
+.TP
+\fIFASTAFILE\fR
+File containing sequences in fasta format (no blank lines)
+.TP
+\fIBLASTFILE\fR
+File containing blast hits (option -outfmt 6)
+
+.SH OPTIONS
+.TP
+.B
+-f  [--prefix] \fIfile\fR          
+Prefix for family ids (none by default)
+.TP
+.B
+-p  [--partial] \fIstring\fR        
+File containing partial sequence ids, one per line (none by default)
+.TP
+.B
+-i  [--ident] \fIfloat\fR    
+Min % identity to accept blast hits for building families (in [0,1], 0.35 by default )
+.TP
+.B
+-r  [--overlap] \fIfloat\fR 
+Min % overlap to accept blast hits for building families (in [0,1], 0.80 by default) 
+.TP
+.B
+-l  [--minplen] \fIint\fR  
+Min length to accept partial sequences in families (100 by default)
+.TP
+.B
+-m  [--minpov] \fIfloat\fR   
+Min % overlap to accept partial sequences in families (in [0,1], 0.50 by default)
+.TP
+.B
+-n  [--net]
+Activate streaming of positively filtered pairs of proteins into a file [filename automatically generated using the prefix of BLASTFILE]
+.TP
+.B
+-h  [--help]         
+Display help information
+.TP
+.B
+-v  [--version]      
+Display version information
+
+.SH AUTHORS
+silix is mainly developed by
+Vincent Miele \fI<vincent.miele@univ-lyon1.fr>\fP under the terms of
+the GNU Public License, in collaboration with Simon Penel \fI<simon.penel@univ-lyon1.fr>\fP
+and Laurent Duret \fI<laurent.duret@univ-lyon1.fr>\fP.
+
+.SH SEE ALSO 
+More information on silix is available at
+\fI<http://lbbe.univ-lyon1.fr/silix>\fP.

@@ -1,0 +1,52 @@
+.TH "SILIXX" 1 "USER COMMANDS"
+.SH NAME
+silixx \-  ultra fast SIngle LInkage Clustering of Sequences (without filtering)
+
+.SH SYNOPSIS
+.B silixx
+.B [OPTIONS]
+\fInb\fR \fIFILE\fR
+
+.SH DESCRIPTION
+From [an upper bound of] the number of sequences and from sequence id pairs,
+display sequence families.
+Each line of 'FILE' is a pair of sequence ids.
+Note that, in expert mode (see below), a pair of sequence ids (whatever the order) must be seen only once and sequence ids must be different for each pair..
+Return a family id for each sequence id.
+
+
+.SH ARGUMENTS
+.TP
+\fInb\fR  
+Number of sequences (or upper bound)
+.TP
+\fIfile\fR
+File containing sequence id pairs
+
+.SH OPTIONS
+.TP
+.B
+-n  [--numeric]
+Specify that sequences ids are integers in [0;nb-1] to improve time performance
+.TP
+.B
+-h  [--help]         
+Display help information
+.TP
+.B
+-v  [--version]      
+Display version information
+.TP
+.B
+-x  [--expert]      
+Specify if the expert mode is activated (depends on configuration options in the building process)
+
+.SH AUTHORS
+silix is mainly developed by
+Vincent Miele \fI<vincent.miele@univ-lyon1.fr>\fP under the terms of
+the GNU Public License, in collaboration with Simon Penel \fI<simon.penel@univ-lyon1.fr>\fP
+and Laurent Duret \fI<laurent.duret@univ-lyon1.fr>\fP.
+
+.SH SEE ALSO 
+More information on silixx is available at
+\fI<http://lbbe.univ-lyon1.fr/silix>\fP.

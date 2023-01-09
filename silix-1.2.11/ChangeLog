@@ -1,0 +1,95 @@
+04-10-2017 Vincent Miele
+	* 1.2.10 -> 1.2.11
+	Modification of the management of exit status
+
+12-14-2015 Vincent Miele
+	* 1.2.9 -> 1.2.10
+	Bug fixed about MPI finalization
+
+03-03-2015 Vincent Miele
+	* 1.2.9 -> 1.2.10
+	New -N option in silix-split
+
+11-04-2014 Vincent Miele
+	* 1.2.8 -> 1.2.9
+	Auxiliary program infoseq is now compatible with fasta files with empty lines
+
+01-28-2013 Vincent Miele
+	* 1.2.7 -> 1.2.8
+	Bug fixed in documentation. silix-split is now correct with sequences from deleted families (due to -n option)
+
+11-19-2012 Vincent Miele
+	* 1.2.6 -> 1.2.7
+	Warning added to silix-split and new default values
+
+04-19-2012 Vincent Miele
+	* 1.2.5-p1 -> 1.2.6
+	More efficient implementation of silix-split
+
+02-21-2012 Vincent Miele
+	* 1.2.5 -> 1.2.5-p1
+	Bug fixed for managing filenames without extensions
+
+11-25-2011 Vincent Miele
+	* 1.2.4 -> 1.2.5
+	New output format for partial sequences
+
+11-14-2011 Vincent Miele
+	* 1.2.3 -> 1.2.4
+	Script silix and silix-split now supports empty lines in fasta files and is robust to partial sequences in .net files
+
+10-12-2011 Vincent Miele
+	* 1.2.2 -> 1.2.3
+	Changing output format for silixx
+
+10-05-2011 Vincent Miele
+	* 1.2.1 -> 1.2.2
+	Adding additionnal tests in configure for boost::program_options
+	Changing target directories for --net option
+
+09-19-2011 Vincent Miele
+	* 1.2.1 -> 1.2.0
+	Adding option --prefix to silix-split
+
+08-22-2011 Vincent Miele
+	* 1.1.3 -> 1.2.0
+	Change in command line: length file is replaced by fasta file
+	Script silix-split included in install procedure
+	Configure option --verbose is modified, adding command line option --net
+	No more expert mode
+
+03-09-2011 Vincent Miele
+	* 1.1.2 -> 1.1.3
+	New option in utils/silix-fstat
+
+02-21-2011 Simon Penel
+	* 1.1.1 -> 1.1.2
+	Adding tests for treating DNA sequences. Extra log information removed.
+
+01-27-2011 Vincent Miele
+	* 1.1.0-p1 -> 1.1.1
+	utils/infoseq is added to the package
+
+12-16-2010 Vincent Miele
+	* 1.1.0 -> 1.1.0-p1
+	Patch 1: bug fixed in unitests
+
+08-11-2010 Vincent Miele
+	* 1.0.1-p1 -> 1.1.0
+	Improved version of the silix-fstat tool
+
+06-18-2010 Vincent Miele
+	* 1.0.1 -> 1.0.1-p1
+	Patch 1: bug fixed about ifstream getline
+	Improvement of the rank incremental procedure
+
+06-16-2010 Vincent Miele
+	* 1.0.0-beta -> 1.0.1
+	First stable version. DyadicTransfer is inactivated (MPI communication).
+
+06-02-2010 Vincent Miele
+	* 1.0.0-alpha -> 1.0.0-beta
+	New option --enable-expert: Expert mode, disables all the new tests/checkings done for verifying the consistency of the content in the input files
+
+
+

@@ -1,0 +1,3 @@
+SUBDIRS =  man
+CLEANFILES =  *~ 
+EXTRA_DIST = 
