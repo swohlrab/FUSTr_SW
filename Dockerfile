@@ -33,7 +33,7 @@ RUN apt-get -y install libboost-program-options-dev
 
 WORKDIR /home/usr/
 RUN git clone https://github.com/swohlrab/FUSTrDev_SW.git
-WORKDIR /home/usr/FUSTrDev/silix-1.2.11
+WORKDIR /home/usr/FUSTrDev_SW/silix-1.2.11
 RUN apt-get install automake -y
 #RUN autoreconf -f -i
 RUN ./configure
