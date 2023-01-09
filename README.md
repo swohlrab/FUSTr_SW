@@ -46,7 +46,7 @@ The only software needed to run FUSTr is [Docker](https://www.docker.com/). FUST
 Download FUSTrDev with the following command
 clone it to your $HOME directory
 ```bash
-git clone https://github.com/swohlrab/FUSTrDev.git
+git clone https://github.com/swohlrab/FUSTrDev_SW.git
 ```
 
 
