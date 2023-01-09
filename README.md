@@ -54,7 +54,7 @@ git clone https://github.com/swohlrab/FUSTrDev_SW.git
 With Docker installed correctly on your system issue the following command to initialize the Docker container. You have to run it in the right location of so that the path in the bash command is right.
 
 ```
-bash FUSTrDev/setup_dockerV2.sh <directory_containing_your_files>
+bash FUSTrDev_SW/setup_dockerV2.sh <directory_containing_your_files>
 ```
 
 Once the docker container has been initialized with docker up, you can enter it using the following command. Alternatively, you can start the docker container with the docker desktop application, and also enter it from there (easier).
