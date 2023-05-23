@@ -136,12 +136,12 @@ This script will throw an error that the end, as it can not produce a "final_res
 # start the run: 
 navigate to the right folder
 
-cd /home/usr/FUSTrDev/bin
+cd /home/usr/FUSTrDev_SW/bin
 
 and start the snkaefile: (example is for the new snakefile, but if you like to use the other, just change the name)
 there is now also an alternative configure.json file, named configure_silix08.json, which is less stringent than the previous one.
 
-snakemake -s FUSTrSnakefileV2 -d /home/usr/data --use-conda --configfile /home/usr/FUSTrDev/configure.json
+snakemake -s FUSTrSnakefileV2 -d /home/usr/data --use-conda --configfile /home/usr/FUSTrDev_SW/configure.json
 
 
 # get your results out of the docker vm
