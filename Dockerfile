@@ -56,5 +56,9 @@ RUN ln -sf /bin/bash /bin/sh
 WORKDIR /home/usr/
 #COPY $package /home/usr/data
 # Copy specific files to the image
-#COPY file1 /destination/path/file1
+COPY bin /home/usr/bin
+COPY codeml /home/usr/codeml
+COPY configure.json /home/usr/
+COPY configure_silix08.json /home/usr/
+COPY utils /home/usr/utilis
 #COPY /path/to/source/folder /home/usr/data
