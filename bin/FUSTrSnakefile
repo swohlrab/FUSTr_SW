@@ -30,241 +30,18 @@ def srcdir(str):
     fullPath = os.path.dirname(os.path.abspath(str)) +"/" +str
     return fullPath
 
-SAMPLES, = glob_wildcards("{sample}.fasta")
+SAMPLES, = glob_wildcards("new_cds/{sample}.fasta")
 print(SAMPLES)
+
+#bis hierhin kann man es erstmal testen
 rule final:
     input:"final_results/FUSTr.out"
     # input:dynamic("Families/family_{fam}_dir/family_{fam}.aln.codon.FUBAR.json")
 
-rule cleanFasta:
-    input:
-        "{sample}.fasta"
-    output:
-        "intermediate_files/{sample}.clean"
-    run:
-        Trinity_bool = {}
-        signature = ""
-        sample = input[0].split('.')[0]
-        sequence_iterator = fasta_iter(input[0])
-        fileLength = 0
-        columnCountDict={}
-        wordDict = {}
-        rowMembers = 1
-        fileLength = 0
-        newDict = {}
-        subString = ""
-        # usableColumns = 0
-        pattern = ""
-        patternExists = True
-        with open(output[0],"w") as out:
-            for ff in sequence_iterator:
-
-                headerStr, seq = ff
-                trinity_identifiers = re.search("c"+"(.*)"+"_g"+"(.*)"+"_i",headerStr)
-
-                if trinity_identifiers !=None:
-                    Trinity_bool["yes"] = True
-                else:
-                    Trinity_bool["no"] = True
-                out.write(">"+headerStr+'\n')
-                out.write(  seq +"\n")
-                fileLength+=1
-                splitHeader = re.split(r'[`\ =~!@#$%^&*()_+\[\]{};\'\\:"|<,./<>?]', headerStr)
-
-                colNum = len(splitHeader)
-                try:
-                    usableColumns = min(colNum, usableColumns)
-                except:
-                    usableColumns = colNum
-
-
-
-                for i in range(usableColumns):
-                    try:
-                        wordDict[i][splitHeader[i]] = True
-                    except:
-                        wordDict[i] = {}
-                        wordDict[i][splitHeader[i]] = True
-            for i in range(usableColumns):
-                if len(wordDict[i].keys()) == fileLength:
-                    signature+="{unique_id}:"
-                elif len(wordDict[i].keys()) == 1:
-                    for j in wordDict[i].keys():
-                        signature+=j + ":"
-                else:
-                    signature+="{isoform_id}:"
-            signature = signature[:-1]
-
-        with open("headerPatterns.txt","a") as out:
-            if "no" not in Trinity_bool:
-                out.write(sample+"\t"+"TRINITY\n")
-            elif "{unique_id}" in signature:
-
-                out.write(sample+"\t"+signature+"\n")
-
-rule newHeaders:
-    input:
-        "intermediate_files/{sample}.clean"
-    output:
-        "intermediate_files/{sample}.new_headers"
-    run:
-        try:
-            patternDict = {}
-            with open("headerPatterns.txt") as f:
-                for line in f:
-                    row = line.strip().split()
-                    patternDict[row[0]] = row[1]
-            with open(output[0],"w") as out:
-                pattern = patternDict[input[0].split('.')[0]]
-
-                if "{unique_id}" in pattern:
-                    if pattern.count("{isoform_id}") == 1:
-                        pattern_list = pattern.split(":")
-                        for i in range(len(pattern_list)):
-                            if pattern_list[i] == "{isoform_id}":
-                                isoform_pos =  i
-                                continue
-                            elif pattern_list[i] == "{unique_id}":
-                                unique_pos =  i
-                                continue
-
-                sequence_iterator = fasta_iter(input[0])
-                for ff in sequence_iterator:
-
-                    headerStr, seq = ff
-                    if pattern == "TRINITY":
-                        trinity_identifiers = re.search("c"+"(.*)"+"_g"+"(.*)"+"_i",headerStr)
-                        new_header = stringSplitter(headerStr.split()[0],"_","-")#[:trinity_identifiers.span()[1]+1]
-                    if "{unique_id}" in pattern:
-                        splitHeader = re.split(r'[`\ =~!@#$%^&*()_+\[\]{};\'\\:"|<,./<>?]', stringSplitter(headerStr,"_","-"))
-                        if pattern.count("{isoform_id}") == 1:
-                            new_header = splitHeader[unique_pos] + "___" + splitHeader[isoform_pos]
-                        else:
-                            new_header = splitHeader[unique_pos]
-                    out.write( ">"+new_header+'\n')
-                    out.write(seq+'\n')
-
-        except:
-            with open(output[0],"w") as out:
-
-                sequence_iterator = fasta_iter(input[0])
-                for ff in sequence_iterator:
-
-                    headerStr, seq = ff
-                    out.write( ">"+stringSplitter(headerStr,"_","-").split()[0] +'\n')
-                    out.write(seq+'\n')
-
-rule orf:
-    input:
-        "intermediate_files/{sample}.new_headers"
-    output:
-        "{sample}.new_headers.transdecoder.pep","{sample}.new_headers.transdecoder.cds"
-    conda:
-        config["orf"]["conda"]
-    shell:
-            config["orf"]["shell"]
-
-
-rule longestIsoform:
-    input:
-        cds="{sample}.new_headers.transdecoder.cds",
-        pep="{sample}.new_headers.transdecoder.pep"
-    output:
-        "intermediate_files/{sample}.longestIsoform.cds",
-        "intermediate_files/{sample}.longestIsoform.pep",
-        "intermediate_files/{sample}.longestIsoform.txt"
-    run:
-        patternDict = {}
-        seqDict = {}
-        cds_iterator = fasta_iter(input.cds)
-        for ff in cds_iterator:
-            headerStr, seq = ff
-            seqDict[headerStr] = {"cds":seq}
-        pep_iterator = fasta_iter(input.pep)
-        for ff in pep_iterator:
-            headerStr, seq = ff
-            seqDict[headerStr]["pep"] = seq
-        with open("headerPatterns.txt") as f:
-            for line in f:
-                row = line.strip().split()
-                patternDict[row[0]] = row[1]
-        try:
-            pattern = patternDict[input[0].split('.')[0]]
-        except:
-            pattern = None
-        # print(pattern)
-
-        with open(output[0], "w") as out_cds:
-            with open(output[1], "w") as out_pep:
-                with open(output[2], "w") as out_txt:
-                    longIsoform={"cds":{},"pep":{}}
-
-                    # sequence_iterator = fasta_iter(input[0])
-                    sample = input.cds.split('.')[0]
-                    # print(seqDict)
-                    for headerStr in seqDict:
-                        cds_seq = seqDict[headerStr]["cds"]
-                        pep_seq = seqDict[headerStr]["pep"]
-
-                        # headerStr, seq = ff
-                        # print(config["complete"])
-
-                        if config["complete"]:
-                            if "type:complete"  not in headerStr:
-                                continue
-
-                        # print("trinity_identifiers:",trinity_identifiers)
-                        if pattern =="TRINITY":
-                            trinity_identifiers = re.search("c"+"(.*)"+"_g"+"(.*)"+"_i",headerStr)
-                            # print("trinity_identifiers:",trinity_identifiers,"\n",headerStr)
-                            # GeneID = headerStr[:trinity_identifiers.span()[1]].split("::")[1]
-                            gene_header = headerStr.split("::")[1]
-                            trinity_identifiers = re.search("c"+"(.*)"+"_g"+"(.*)"+"_i",gene_header)
-                            isoformID = gene_header.split(gene_header[:trinity_identifiers.span()[1]])[1].split("_")[0]
-                            GeneID = gene_header[:trinity_identifiers.span()[1]] #+ gene_header.split(gene_header[:trinity_identifiers.span()[1]])[1].split("_")[0]
-                        else:
-                            try:
-
-                                GeneID=headerStr.split('___')[1].split('::')[0]
-                            except:
-                                reduced_header = stringSplitter(headerStr.split()[0].split("::")[0]+headerStr.split()[0].split("::")[1],"_","-")
-                                out_cds.write('>'+sample+"_"+reduced_header+'\n')
-                                out_pep.write('>'+sample+"_"+reduced_header+'\n')
-                                out_cds.write(cds_seq + '\n')
-                                out_pep.write(pep_seq + '\n')
-                                continue
-                        out_txt.write(GeneID+isoformID+","+str(len(cds_seq))+"\n")
-                        if GeneID not in longIsoform["cds"]:
-                            longIsoform["cds"][GeneID] = [len(cds_seq),headerStr,cds_seq]
-                            longIsoform["pep"][GeneID] = [len(pep_seq),headerStr,pep_seq]
-                            # out_txt.write(GeneID+isoformID+","+str(len(cds_seq))+"\n")
-                        else:
-                            if longIsoform["cds"][GeneID][0] < len(cds_seq):
-                                longIsoform["cds"][GeneID] = [len(cds_seq),headerStr,cds_seq]
-                                longIsoform["pep"][GeneID] = [len(pep_seq),headerStr,pep_seq]
-                                # out_txt.write(GeneID+isoformID+","+str(len(cds_seq))+"\n")
-
-                        try:
-                            #these are isoform things from Trinity
-                            longIsoform["cds"][GeneID].append(isoformID)
-                            longIsoform["pep"][GeneID].append(isoformID)
-                        except:
-                            None
-                    for i in longIsoform["cds"].keys():
-                        try:
-                            out_cds.write('>'+sample+'_'+i+longIsoform["cds"][i][3]+'\n')
-                            out_pep.write('>'+sample+'_'+i+longIsoform["pep"][i][3]+'\n')
-                        except:
-                            out_cds.write('>'+sample+'_'+i+'\n')
-                            out_pep.write('>'+sample+'_'+i+'\n')
-                        # out.write('>'+sample+'_'+longIsoform[i][1].split("::")[0]+'\n')
-                        out_cds.write(longIsoform["cds"][i][2]+'\n')
-                        out_pep.write(longIsoform["pep"][i][2]+'\n')
-
 rule combine_pep_and_cds:
     input:
-        pep=expand("intermediate_files/{sample}.longestIsoform.pep",sample=SAMPLES),
-        cds=expand("intermediate_files/{sample}.longestIsoform.cds",sample=SAMPLES)
+        pep=expand("new_pep/{sample}.fasta",sample=SAMPLES),
+        cds=expand("new_cds/{sample}.fasta",sample=SAMPLES)
     output:
         "intermediate_files/all.pep.combined","intermediate_files/fusterID.txt","intermediate_files/all.cds.combined"
 
@@ -295,63 +72,32 @@ rule combine_pep_and_cds:
 
                     else:
                         cds_out.write(line)
-rule redirekt_data:
-    input:
-        pep="../data_files/master_peptides.fasta",
-        cds="../data_files/master_cds.fasta"
-    output:
-        "../data_files/all.pep.combined","../data_files/fusterID.txt","../data_files/all.cds.combined"
-
-    run:
-        print("TESTING SOMETHING FROM CONFIG")
-        print(config)
-        fusterID = 1
-        idDict = {}
-
-        with open(output[1],"w") as id_out:
-            with open(output[0] ,"w") as pep_out:
-                for line in open(input.pep):
-                        if ">" in line:
-
-                            pep_out.write(">fusterID_"+str(fusterID)+"\n")
-                            idDict[line.strip().strip(">")] = "fusterID_" + str(fusterID)
-                            id_out.write("fusterID_"+str(fusterID) + "\t"+line.strip(">"))
-                            fusterID+=1
-                        else:
-                            pep_out.write(line)
-        with open(output[2],"w") as cds_out:
-
-            for line in open(input.cds):
-                    if  ">" in line:
-                        cds_out.write(">" + idDict[line.strip().strip(">")]+"\n")
-
-                    else:
-                        cds_out.write(line)
 
 rule blastall:
     input:
-        "../data_files/all.pep.combined"
+        "intermediate_files/all.pep.combined"
     output:
-        "../data_files/all.pep.combined.blastall.out"
+        "intermediate_files/all.pep.combined.blastall.out"
     threads:99
     conda:
         config["blast"]["conda"]
     shell:
         config["blast"]["shell"]
 
+#hier dann weiter machen
 rule silix:
     input:
-        sequence_file="../data_files/all.pep.combined",
-        blast_file = "../data_files/all.pep.combined.blastall.out"
+        sequence_file="intermediate_files/all.pep.combined",
+        blast_file = "intermediate_files/all.pep.combined.blastall.out"
     output:
-        "../data_files/all.pep.combined_r90_SLX.fnodes"
+        "intermediate_files/all.pep.combined_r90_SLX.fnodes"
     shell:
         config["clust"]["shell"]
 
 rule node2families:
     input:
-        node_file="../data_files/all.pep.combined_r90_SLX.fnodes",
-        sequence_file="../data_files/all.pep.combined"
+        node_file="intermediate_files/all.pep.combined_r90_SLX.fnodes",
+        sequence_file="intermediate_files/all.pep.combined"
     output:
         dynamic("Families/family_{fam}.fa")
     run:
@@ -437,7 +183,7 @@ rule phy2codon:
     input:
         untrimmed="Families/family_{fam}.phy",
         column_file="Families/family_{fam}.aln.trimmed.column_file",
-        nucleotide="../data_files/all.cds.combined"
+        nucleotide="intermediate_files/all.cds.combined"
     output:
         "Families/family_{fam}_dir/family_{fam}.codon.phylip",
         "Families/family_{fam}_dir/family_{fam}.aln.codon"
@@ -561,13 +307,13 @@ rule finalStatistics:
                                 out.write(currentFile.split("/")[-1].split(".")[0]+" "+result.group(1)+"\n")
 rule final_results:
     input:
-        provided=expand("{sample}.fasta",sample=SAMPLES),
-        transdecoder=expand("{sample}.new_headers.transdecoder.pep",sample=SAMPLES),
-        allPep="../data_files/all.pep.combined",
-        allCDS="../data_files/all.cds.combined",
-        blast="../data_files/all.pep.combined.blastall.out",
-        fams="../data_files/all.pep.combined_r90_SLX.fnodes",
-        idFile="../data_files/fusterID.txt",
+        provided=expand("new_cds/{sample}.fasta",sample=SAMPLES),
+        #transdecoder=expand("{sample}.new_headers.transdecoder.pep",sample=SAMPLES),
+        allPep="intermediate_files/all.pep.combined",
+        allCDS="intermediate_files/all.cds.combined",
+        blast="intermediate_files/all.pep.combined.blastall.out",
+        fams="intermediate_files/all.pep.combined_r90_SLX.fnodes",
+        idFile="intermediate_files/fusterID.txt",
         posFams="final_results/famsUnderSelection.txt"
         # json=dynamic("Families/family_{fam}_dir/family_{fam}.aln.codon.FUBAR.json"),
         # log=dynamic("Families/family_{fam}_dir/family_{fam}.aln.codon.FUBAR.log")
@@ -581,7 +327,7 @@ rule final_results:
     run:
         samples = 0
         original_sequence = 0
-        transdecoder_sequence = 0
+        #transdecoder_sequence = 0
         allPep = 0
         totFams = 0
         usedFams = 0
@@ -602,11 +348,6 @@ rule final_results:
                     for line in f:
                         if line[0]==">":
                             original_sequence+=1
-            for currentFile in input.transdecoder:
-                with open(currentFile) as f:
-                    for line in f:
-                        if line[0]==">":
-                            transdecoder_sequence+=1
             with open(output.pep,"w") as pepOut:
                 sequence_iterator = fasta_iter(input.allPep)
                 for ff in sequence_iterator:
@@ -671,12 +412,12 @@ rule final_results:
             #
             #                         posOut.write(currentFile.split("/")[-1].split(".")[0]+" "+result.group(1)+"\n")
 
-            out.write("Thank you for using FUSTr!!\n")
-            out.write("You provided as input a total of "+ str(original_sequence)+" transcripts from " +str(samples)+" samples\n")
-            out.write("FUSTr used a total of "+str(allPep)+" of these transcripts and disregarded " +str(allPep - transdecoder_sequence)+ " isoforms\n")
-            out.write("These transcripts were divided into "+str(totFams)+" families, "+str(usedFams)+" had > 15 sequences used for analysis\n")
-            out.write("FUSTr discovered "+str(selectFams)+" families under strong positive selection in your dataset\n\n")
-            out.write("More information about these families can be found in the final_results directory!!")
+            #out.write("Thank you for using FUSTr!!\n")
+            #out.write("You provided as input a total of "+ str(original_sequence)+" transcripts from " +str(samples)+" samples\n")
+            #out.write("FUSTr used a total of "+str(allPep)+" of these transcripts and disregarded " +str(allPep - transdecoder_sequence)+ " isoforms\n")
+            #out.write("These transcripts were divided into "+str(totFams)+" families, "+str(usedFams)+" had > 15 sequences used for analysis\n")
+            #out.write("FUSTr discovered "+str(selectFams)+" families under strong positive selection in your dataset\n\n")
+            #out.write("More information about these families can be found in the final_results directory!!")
 
 #             # """
 #             # Thank you for using FUSTr!!

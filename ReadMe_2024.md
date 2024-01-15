@@ -30,7 +30,7 @@ cd /home/usr/FUSTrDev_SW/bin
 and start the snkaefile
 there is now also an alternative configure.json file, named configure_silix08.json, which is less stringent than the previous one.
 
-snakemake -s FUSTrSnakefileV2 -d /home/usr/data --use-conda --configfile /home/usr/FUSTrDev_SW/configure.json
+snakemake -s FUSTrSnakefile -d /home/usr/data --use-conda --configfile /home/usr/FUSTrDev_SW/configure.json
 
 due to :
 SAMPLES, = glob_wildcards("new_cds/{sample}.fasta")
