@@ -32,6 +32,8 @@ there is now also an alternative configure.json file, named configure_silix08.js
 
 snakemake -s FUSTrSnakefile -d /home/usr/data --use-conda --configfile /home/usr/configure.json
 
+snakemake -s SnakemakeOrginal -d /home/usr/data --use-conda --configfile /home/usr/configure.json
+
 due to :
 SAMPLES, = glob_wildcards("new_cds/{sample}.fasta")
 print(SAMPLES)
