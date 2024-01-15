@@ -34,6 +34,10 @@ for filename in new_pep/*.transdecoder.pep; do
 
 done
 
+# remove * from the .pep files:
+sed '/^>/! s/\*//g' your_fasta_file.fasta > output_file.fasta
+
+
 #remove the folder not needed any more
 rm -r cds
 rm -r pep
