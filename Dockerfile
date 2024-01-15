@@ -1,7 +1,5 @@
+# Use the official Ubuntu 18.04 image as the base image
 FROM ubuntu:18.04
-
-
-
 
 # Install software needed to run the pipeline
 RUN apt-get -qq update
@@ -22,25 +20,19 @@ RUN apt-get update && apt-get install -y \
         python3-flask
 RUN apt-get install -qqy python3-pip
 
-ARG package
+#ARG package
 WORKDIR /home/usr
 
 RUN mkdir data
 RUN  apt-get -y install libboost-dev
 RUN apt-get -y install libboost-program-options-dev
-# I do not need silix, it is already in my laptop, and it looks like it is not downloadable anymore
-#but we can load it in the docker anyway from our local machine
 
-WORKDIR /home/usr/
-RUN git clone https://github.com/swohlrab/FUSTrDev_SW.git
-WORKDIR /home/usr/FUSTrDev_SW/silix-1.2.11
+# Clone the FUSTrDev repository and build silix
+WORKDIR /home/usr
+COPY silix-1.2.11 /home/usr/FUSTrDev/silix-1.2.11
+WORKDIR /home/usr/FUSTrDev/silix-1.2.11
 RUN apt-get install automake -y
-#RUN autoreconf -f -i
-RUN ./configure
-RUN make
-RUN make check
-RUN make install
-
+RUN ./configure && make && make check && make install
 
 WORKDIR /home/usr
 
@@ -62,4 +54,6 @@ ENV PATH /home/usr/FUSTrDev/bin:$PATH
 
 RUN ln -sf /bin/bash /bin/sh
 WORKDIR /home/usr/
-COPY $package /home/usr/data
+#COPY $package /home/usr/data
+# Copy specific files to the image
+COPY file1 /destination/path/file1

@@ -64,6 +64,10 @@ Check if the input data get loaded each time when you start the container from t
 docker run -it fustr /bin/bash
 ```
 
+docker image ls
+
+screen -S orfi docker run -it --rm -v `pwd`:/input davidemms/orthofinder /bin/bash
+
 Now that you are in the docker container, your data is in /home/usr/data (check this first), to run FUSTr simply issue the following command
 
 
