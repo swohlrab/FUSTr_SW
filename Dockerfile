@@ -56,4 +56,5 @@ RUN ln -sf /bin/bash /bin/sh
 WORKDIR /home/usr/
 #COPY $package /home/usr/data
 # Copy specific files to the image
-COPY file1 /destination/path/file1
+#COPY file1 /destination/path/file1
+#COPY /path/to/source/folder /home/usr/data

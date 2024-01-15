@@ -15,10 +15,10 @@ docker build -t fustr-test:latest .
 docker image ls
 
 # start image
-run -it fustr-test /bin/bash
+docker run -it --rm fustr-test /bin/bash
 
 # or on the VM
-screen -S frust docker run -it -v `pwd`:/input fustr-test /bin/bash
+screen -S frust docker run -it --rm -v `pwd`:/input fustr-test /bin/bash
 
 #in the docker container, your data have to be in /home/usr/data (check this first). Otherwise copy them in there to specify the correct path for the VM
 
