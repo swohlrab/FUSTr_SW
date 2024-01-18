@@ -3,7 +3,7 @@
 Download FUSTrDev with the following command
 clone it to your $HOME directory
 ```bash
-git clone https://github.com/swohlrab/FUSTrDev_SW.git
+git clone https://github.com/swohlrab/FUSTr_SW.git
 ```
 
 ## Installing FUSTrDev with Docker
