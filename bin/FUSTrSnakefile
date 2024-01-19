@@ -12,19 +12,6 @@ def fasta_iter(fasta_name):
         headerStr = header.__next__()[1:].strip()#Entire line, add .split[0] for just first column
         seq = "".join(s.strip() for s in faiter.__next__())
         yield (headerStr, seq)
-def stringSplitter(string,delimiter,avoid):
-    finalString = ""
-    numSpecialChar = 0
-    for i in string:
-        specialCharacterBool= (not i.isdigit() and not i.isalpha() and i!=avoid)
-        if specialCharacterBool:
-            numSpecialChar+=1
-        else:
-            if numSpecialChar > 0:
-                finalString+=delimiter
-            finalString+=i
-            numSpecialChar = 0
-    return finalString
 
 def srcdir(str):
     fullPath = os.path.dirname(os.path.abspath(str)) +"/" +str
