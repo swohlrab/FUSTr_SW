@@ -106,7 +106,7 @@ rule node2families:
             seqDict[headerStr] = seq
 
         for i in famDict.keys():
-            if len(famDict[i])>14:
+            if len(famDict[i])>10:
                 FileName = "Families/family_"+i+".fa"
                 # print(FileName,output)
                 with open(FileName, "w") as out:
@@ -175,9 +175,7 @@ rule phy2codon:
         "Families/family_{fam}_dir/family_{fam}.codon.phylip",
         "Families/family_{fam}_dir/family_{fam}.aln.codon"
     threads: 8
-   
     run:
-        fam = wildcards.fam
         cut = ""
         longIsoform_CDS_combined ={}
         sequence_iterator = fasta_iter(input.nucleotide)
@@ -186,75 +184,72 @@ rule phy2codon:
             GeneID = headerStr
             if GeneID not in longIsoform_CDS_combined:
                     longIsoform_CDS_combined[GeneID] = seq
-        # Open output
+        #Open outout
         # print(len(longIsoform_CDS_combined))
         with open(output[0], "w") as out:
-            with open(output[1], "w") as out2:
-                # Get column cut file
+            with open(output[1],"w") as out2:
+                #Get  column cut file
                 with open(input.column_file) as f:
                     for line in f:
-                        cut += line.strip().split("#ColumnsMap")[1]
+                        cut  +=line.strip().split("#ColumnsMap")[1]
                     cut = cut.split(',')
                     cut = list(map(int, cut))
-                # Get corresponding untrimmed Alignments, as original, line by line
-                line1 = True
-                first_line = True
+                #Get corresponding untrimmed Alignments, as original, line by line
+                line1=True
+                first_line=True
                 with open(input.untrimmed) as f:
                     for line in f:
                         if line1:
-                            line1 = False
+                            line1=False
                             continue
 
-                        row = line.strip().split()
-                        original = row[1]  # cds
-                        header = row[0]
+                        row =line.strip().split()
+                        original=row[1]#cds
+                        header=row[0]
 
-                        # NOTE, potential bug below, if exception then sequence isn't declared and it can't go forward, use continue probably
+                        #NOTE, potetintal bug below, if exception then sequence isn't declared and it can't go forward, use continue probably
                         try:
-                            sequence = longIsoform_CDS_combined[header]  # original
-                        except KeyError:
-                            # Handle the case where header is not a valid key in longIsoform_CDS_combined
-                            print(f"KeyError in family: {fam}, header: {header}, sequence not found.")
+                            sequence=longIsoform_CDS_combined[header]#original
+                        except:
                             continue
-
-                        CodonPos = {}
-                        position = 0
-                        codon = ""
-                        number = 1
+                        CodonPos={}
+                        position=0
+                        codon=""
+                        number=1
                         for i in sequence:
-                            codon += i
-                            if position % 3 == 2:
-                                CodonPos[number] = codon
-                                number += 1
-                            position += 1
 
-                            if position % 3 == 0:
-                                codon = ""
-                        aaPos = 0
-                        alnPos = 0
-                        prot = ""
-                        trimmed = ""
+                            codon +=i
+                            if position%3==2:
+                                CodonPos[number]=codon
+                                number+=1
+                            position +=1
+
+                            if position%3==0:
+                                codon=""
+                        aaPos=0
+                        firstAA=True
+                        alnPos=0
+                        prot=""
+                        trimmed=""
                         for i in original:
-                            if i != "-":
-                                aaPos += 1
+                            if i!="-":
+                                aaPos+=1
 
                             if alnPos in cut:
-                                prot += i
-                                if aaPos in CodonPos:
-                                    trimmed += CodonPos[aaPos]
+                                prot+=i
+                                if i != "-":
+                                    # print(aaPos,CodonPos[aaPos])
+                                    trimmed+=CodonPos[aaPos]
                                 else:
-                                    # Handle the case where aaPos is not a valid key in CodonPos
-                                    print(f"KeyError in family: {fam}, header: {header}, aaPos: {aaPos}, CodonPos not found.")
-                                    trimmed += "???"
-                            alnPos += 1
-                        num_lines = sum(1 for line in open(input.untrimmed))
+                                    trimmed+="---"
+                            alnPos+=1
+                        num_lines = sum(1 for line in open(input.untrimmed) )
                         if first_line:
-                            out.write(str(num_lines - 1) + " " + str(len(trimmed)) + '\n')
-                            first_line = False
-                        out.write(header + '   ' + trimmed + '\n')
-                        out2.write(">" + header + "\n")
-                        out2.write(trimmed + "\n")
-
+                            out.write(str(num_lines-1) + " " + str(len(trimmed)) + '\n')
+                            first_line=False
+                        out.write(header+'   '+trimmed+'\n')
+                        out2.write(">"+header+"\n")
+                        out2.write(trimmed+"\n")
 
 rule phylogeny:
     input:
@@ -310,7 +305,7 @@ rule final_results:
         # json=dynamic("Families/family_{fam}_dir/family_{fam}.aln.codon.FUBAR.json"),
         # log=dynamic("Families/family_{fam}_dir/family_{fam}.aln.codon.FUBAR.log")
     output:
-        posFams="final_results/famsUnderSelection.txt",
+        # posFams="final_results/famsUnderSelection.txt",
         FUSTrFams="final_results/FUSTr.fams",
         blast="final_results/FUSTr.blast.out",
         pep="final_results/FUSTr.pep",
