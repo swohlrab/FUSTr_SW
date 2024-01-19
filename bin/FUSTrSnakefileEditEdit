@@ -175,7 +175,9 @@ rule phy2codon:
         "Families/family_{fam}_dir/family_{fam}.codon.phylip",
         "Families/family_{fam}_dir/family_{fam}.aln.codon"
     threads: 8
+   
     run:
+        fam = wildcards.fam
         cut = ""
         longIsoform_CDS_combined ={}
         sequence_iterator = fasta_iter(input.nucleotide)
